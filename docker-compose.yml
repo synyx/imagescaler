@@ -1,0 +1,23 @@
+version: '2'
+services:
+  'rabbitmq':
+    image: rabbitmq:3-management
+    ports:
+     - "5672:5672"
+     - "15672:15672"
+    hostname: messaging.localdomain
+
+  'minio':
+    image: minio/minio
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: password
+    ports:
+     - "9000:9000"
+    volumes:
+      - data:/data
+      - config:/root/.minio
+    command: server /data
+volumes:
+  data:
+  config:
