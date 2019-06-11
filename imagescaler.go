@@ -29,6 +29,8 @@ func main() {
 	conn := connectRabbit(rabbitConfig)
 	defer conn.Close()
 
+	ScaleImage(nil)
+
 	log.Print("hallo")
 }
 func readRabbitConf() rabbitConf {
@@ -42,6 +44,8 @@ func readRabbitConf() rabbitConf {
 	viper.SetDefault("rabbitmq.password", "guest")
 	viper.SetDefault("rabbitmq.timeout", "5s")
 	viper.SetDefault("rabbitmq.image.exchange", "image.event")
+
+	//default values suitable for min.io docker container
 	viper.SetDefault("minio.url", "http://localhost:9000")
 	viper.SetDefault("minio.accesskey", "admin")
 	viper.SetDefault("minio.secret", "secret")
