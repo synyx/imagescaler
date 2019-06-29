@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
-	"github.com/streadway/amqp"
 	"log"
 	"time"
+
+	"github.com/spf13/viper"
+	"github.com/streadway/amqp"
 )
 
 type rabbitConf struct {
@@ -18,22 +19,22 @@ type rabbitConf struct {
 	imageUpdateQueue      string
 	imageUpdateRoutingKey string
 	timeout               time.Duration
-	minioUrl              string
+	minioURL              string
 	minioAccessKey        string
 	minioSecret           string
 	minioBucketName       string
 }
 
 func main() {
-	rabbitConfig := readRabbitConf()
-	conn := connectRabbit(rabbitConfig)
-	defer conn.Close()
+	config := readConfig()
+	connection := connectRabbit(config)
+	defer connection.Close()
 
 	ScaleImage(nil)
 
 	log.Print("hallo")
 }
-func readRabbitConf() rabbitConf {
+func readConfig() rabbitConf {
 	viper.SetConfigFile("config.properties")
 	viper.SetConfigType("properties")
 
@@ -65,7 +66,7 @@ func readRabbitConf() rabbitConf {
 		imageExchange:         viper.GetString("rabbitmq.image.exchange"),
 		imageUpdateQueue:      viper.GetString("rabbitmq.image.udpate.queue"),
 		imageUpdateRoutingKey: viper.GetString("rabbitmq.image.update.routingkey"),
-		minioUrl:              viper.GetString("minio.url"),
+		minioURL:              viper.GetString("minio.url"),
 		minioAccessKey:        viper.GetString("minio.accesskey"),
 		minioSecret:           viper.GetString("minio.secret"),
 		minioBucketName:       viper.GetString("minio.bucketname"),
