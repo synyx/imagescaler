@@ -2,13 +2,14 @@ package main
 
 import (
 	"bytes"
-	"golang.org/x/image/bmp"
-	"golang.org/x/image/draw"
 	"image"
 	"image/jpeg"
 	"image/png"
 	"io"
 	"log"
+
+	"golang.org/x/image/bmp"
+	"golang.org/x/image/draw"
 )
 
 func ScaleImage(in io.Reader) io.Reader {
@@ -17,7 +18,7 @@ func ScaleImage(in io.Reader) io.Reader {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dst := image.NewRGBA(image.Rect(0,0, src.Bounds().Dx(), src.Bounds().Dy()))
+	dst := image.NewRGBA(image.Rect(0, 0, src.Bounds().Dx(), src.Bounds().Dy()))
 
 	draw.BiLinear.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
 
