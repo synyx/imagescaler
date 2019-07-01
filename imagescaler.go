@@ -66,7 +66,7 @@ func readConfig() rabbitConf {
 		imageExchange:         viper.GetString("rabbitmq.image.exchange"),
 		imageUpdateQueue:      viper.GetString("rabbitmq.image.udpate.queue"),
 		imageUpdateRoutingKey: viper.GetString("rabbitmq.image.update.routingkey"),
-		minioURL:              viper.GetString("minio.url"),
+		minioUrl:              viper.GetString("minio.url"),
 		minioAccessKey:        viper.GetString("minio.accesskey"),
 		minioSecret:           viper.GetString("minio.secret"),
 		minioBucketName:       viper.GetString("minio.bucketname"),
@@ -79,10 +79,9 @@ func connectRabbit(conf rabbitConf) *amqp.Connection {
 		if err == nil && conn != nil {
 			log.Println("connected to rabbitmq")
 			return conn
-		} else {
-			log.Println(fmt.Sprintf("failed to connect to rabbitmq will retry in %d. current cause: %s", conf.timeout, err))
-			time.Sleep(conf.timeout)
 		}
+		log.Println(fmt.Sprintf("failed to connect to rabbitmq will retry in %d. current cause: %s", conf.timeout, err))
+		time.Sleep(conf.timeout)
 	}
 }
 

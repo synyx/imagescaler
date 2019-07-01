@@ -12,6 +12,7 @@ import (
 	"golang.org/x/image/draw"
 )
 
+// ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
 func ScaleImage(in io.Reader) io.Reader {
 	src, imageType, err := image.Decode(in)
 
