@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -10,6 +11,15 @@ import (
 
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/draw"
+)
+
+type base int
+
+const (
+	// THUMBNAIL is the size for thumbnails
+	THUMBNAIL base = iota
+	// WEB is the size for web usage
+	WEB
 )
 
 // ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
@@ -33,11 +43,21 @@ func ScaleImage(in io.Reader) io.Reader {
 	} else if imageType == "bmp" {
 		encodeErr = bmp.Encode(buff, dst)
 	} else {
-		log.Fatal("unknown image format ")
+		log.Printf("unknown image format %s", imageType)
 	}
 	if encodeErr != nil {
 		log.Fatal(encodeErr)
 	}
 
 	return bytes.NewReader(buff.Bytes())
+}
+
+//DstBounds returns
+func DstBounds(srcBounds image.Rectangle) (image.Rectangle, error) {
+
+	var dstBounds image.Rectangle
+
+	//do some math
+
+	return dstBounds, errors.New("failed to compute destination bounds")
 }
