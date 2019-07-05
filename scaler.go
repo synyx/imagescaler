@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -13,11 +13,12 @@ import (
 	"golang.org/x/image/draw"
 )
 
-type base int
+// Scale defines a symbolic value for the target size of a scaling operation
+type Scale int
 
 const (
 	// THUMBNAIL is the size for thumbnails
-	THUMBNAIL base = iota
+	THUMBNAIL Scale = iota
 	// WEB is the size for web usage
 	WEB
 )
@@ -53,11 +54,28 @@ func ScaleImage(in io.Reader) io.Reader {
 }
 
 //DstBounds returns
-func DstBounds(srcBounds image.Rectangle) (image.Rectangle, error) {
+func DstBounds(srcBounds image.Rectangle, scale Scale) (image.Rectangle, error) {
 
 	var dstBounds image.Rectangle
 
-	//do some math
+	var dstX int
+	switch scale {
+	case THUMBNAIL:
+		dstX = 100
+		break
+	case WEB:
+		dstX = 1000
+		break
+	default:
+		return dstBounds, fmt.Errorf("unknown scale: %d", scale)
+	}
 
-	return dstBounds, errors.New("failed to compute destination bounds")
+	if dstX >= srcBounds.Dx() {
+		return srcBounds, nil //nothing to do. we do not up-scale atm
+	}
+
+	scaleFactor := float64(dstX) / float64(srcBounds.Dx())
+	dstY := int(float64(srcBounds.Dy()) * scaleFactor)
+
+	return image.Rect(0, 0, dstX, dstY), nil
 }
