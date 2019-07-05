@@ -66,7 +66,7 @@ func readConfig() rabbitConf {
 		imageExchange:         viper.GetString("rabbitmq.image.exchange"),
 		imageUpdateQueue:      viper.GetString("rabbitmq.image.udpate.queue"),
 		imageUpdateRoutingKey: viper.GetString("rabbitmq.image.update.routingkey"),
-		minioUrl:              viper.GetString("minio.url"),
+		minioURL:              viper.GetString("minio.url"),
 		minioAccessKey:        viper.GetString("minio.accesskey"),
 		minioSecret:           viper.GetString("minio.secret"),
 		minioBucketName:       viper.GetString("minio.bucketname"),
