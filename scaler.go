@@ -31,7 +31,6 @@ func ScaleImage(in io.Reader, scale Scale) io.Reader {
 		log.Fatal(err)
 	}
 
-	//TODO: decide scaling factor
 	dstBounds, err := computeDstBounds(src.Bounds(), scale)
 	if err != nil {
 		log.Fatal(err)
@@ -44,6 +43,7 @@ func ScaleImage(in io.Reader, scale Scale) io.Reader {
 	buff := new(bytes.Buffer)
 	var encodeErr error
 
+	//TODO: need to know the actual type name (debug it)
 	if imageType == "jpeg" {
 		encodeErr = jpeg.Encode(buff, dst, nil)
 	} else if imageType == "png" {
