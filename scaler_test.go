@@ -10,7 +10,7 @@ func TestCorrectThumbnailScaling(t *testing.T) {
 	srcImage := image.NewRGBA(image.Rect(0, 0, 1200, 200))
 	srcRectangle := srcImage.Bounds()
 
-	dstRectangle, err := DstBounds(srcRectangle, THUMBNAIL)
+	dstRectangle, err := computeDstBounds(srcRectangle, THUMBNAIL)
 	if err != nil {
 		t.Errorf("failed to convert: %s", err)
 	}
@@ -23,7 +23,7 @@ func TestCorrectWebScaling(t *testing.T) {
 	srcImage := image.NewRGBA(image.Rect(0, 0, 1200, 200))
 	srcRectangle := srcImage.Bounds()
 
-	dstRectangle, err := DstBounds(srcRectangle, WEB)
+	dstRectangle, err := computeDstBounds(srcRectangle, WEB)
 	if err != nil {
 		t.Errorf("failed to convert: %s", err)
 	}

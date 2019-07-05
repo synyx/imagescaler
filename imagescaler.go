@@ -30,7 +30,7 @@ func main() {
 	connection := connectRabbit(config)
 	defer connection.Close()
 
-	ScaleImage(nil)
+	ScaleImage(nil, THUMBNAIL)
 
 	log.Print("hallo")
 }

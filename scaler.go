@@ -24,15 +24,22 @@ const (
 )
 
 // ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
-func ScaleImage(in io.Reader) io.Reader {
+func ScaleImage(in io.Reader, scale Scale) io.Reader {
 	src, imageType, err := image.Decode(in)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	//TODO: decide scaling factor
+	dstBounds, err := computeDstBounds(src.Bounds(), scale)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	dst := image.NewRGBA(image.Rect(0, 0, src.Bounds().Dx(), src.Bounds().Dy()))
 
-	draw.BiLinear.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
+	draw.BiLinear.Scale(dst, dstBounds, src, src.Bounds(), draw.Over, nil)
 
 	buff := new(bytes.Buffer)
 	var encodeErr error
@@ -53,8 +60,8 @@ func ScaleImage(in io.Reader) io.Reader {
 	return bytes.NewReader(buff.Bytes())
 }
 
-//DstBounds returns
-func DstBounds(srcBounds image.Rectangle, scale Scale) (image.Rectangle, error) {
+//computeDstBounds returns
+func computeDstBounds(srcBounds image.Rectangle, scale Scale) (image.Rectangle, error) {
 
 	var dstBounds image.Rectangle
 
@@ -74,6 +81,8 @@ func DstBounds(srcBounds image.Rectangle, scale Scale) (image.Rectangle, error) 
 		return srcBounds, nil //nothing to do. we do not up-scale atm
 	}
 
+	//this not rounding the dimensions but cutting of fraction
+	//digits. good enough for me. ;)
 	scaleFactor := float64(dstX) / float64(srcBounds.Dx())
 	dstY := int(float64(srcBounds.Dy()) * scaleFactor)
 
