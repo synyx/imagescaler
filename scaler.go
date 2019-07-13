@@ -36,7 +36,7 @@ func ScaleImage(in io.Reader, scale Scale) io.Reader {
 		log.Fatal(err)
 	}
 
-	dst := image.NewRGBA(image.Rect(0, 0, src.Bounds().Dx(), src.Bounds().Dy()))
+	dst := image.NewRGBA(dstBounds)
 
 	draw.BiLinear.Scale(dst, dstBounds, src, src.Bounds(), draw.Over, nil)
 
