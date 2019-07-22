@@ -14,7 +14,16 @@ func main() {
 	connection := connectRabbit(config)
 	defer connection.Close()
 
+	channel, err := connection.Channel()
+	defer channel.Close()
+	failOnError(err, "failed to create channel from connectoin")
+
+	rabbitArtifacts := setupRabbitMqTopicsAndQueues(channel, "user.event", "user.image.event.dev", "user.image.created.#")
+
 	ScaleImage(nil, THUMBNAIL)
+
+	_, deliveryErr := channel.Consume(rabbitArtifacts.queriesQueueName, "what?", false, false, false, false, nil)
+	failOnError(deliveryErr, "failed to deliver messages")
 
 	log.Print("hallo")
 }
