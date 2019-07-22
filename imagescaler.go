@@ -22,7 +22,7 @@ func main() {
 
 	ScaleImage(nil, THUMBNAIL)
 
-	_, deliveryErr := channel.Consume(rabbitArtifacts.queriesQueueName, "what?", false, false, false, false, nil)
+	_, deliveryErr := channel.Consume(rabbitArtifacts.userImageUpdateQueueName, "what?", false, false, false, false, nil)
 	failOnError(deliveryErr, "failed to deliver messages")
 
 	log.Print("hallo")
