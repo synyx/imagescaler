@@ -1,13 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
-
 	"time"
 
 	"github.com/streadway/amqp"
 )
+
+type ImageUpdate struct {
+	imageUUID string
+	userUUID  string
+}
 
 func main() {
 	config := readConfig()
@@ -22,8 +27,25 @@ func main() {
 
 	ScaleImage(nil, THUMBNAIL)
 
-	_, deliveryErr := channel.Consume(rabbitArtifacts.userImageUpdateQueueName, "what?", false, false, false, false, nil)
+	msgs, deliveryErr := channel.Consume(rabbitArtifacts.userImageUpdateQueueName, "what?", false, false, false, false, nil)
 	failOnError(deliveryErr, "failed to deliver messages")
+
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	go func() {
+		for msg := range msgs {
+
+			var imageUpdate ImageUpdate
+			jsonErr := json.Unmarshal(msg.Body, &imageUpdate)
+
+			if jsonErr != nil {
+				log.Println("failed to consume image update message")
+				msg.Nack(false, false)
+			} else {
+				log.Println("successfully consumed image update message")
+				msg.Ack(false)
+			}
+		}
+	}()
 
 	log.Print("hallo")
 }
