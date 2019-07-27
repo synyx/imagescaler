@@ -43,7 +43,7 @@ func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound ch
 		jsonErr := json.Unmarshal(msg.Body, &imageUpdate)
 
 		if jsonErr != nil {
-			log.Println("failed to consume image update message")
+			log.Printf("failed to consume image update message %v\n", jsonErr)
 			msg.Nack(false, false)
 		} else {
 			log.Println("successfully consumed image update message")
