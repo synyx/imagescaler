@@ -36,8 +36,8 @@ func setupRabbitMqTopicsAndQueues(channel *amqp.Channel, userEventExchangeName s
 	return rabbitArtifacts{userEventExchangeName: userEventExchangeName, userImageUpdateQueueName: userImageEventQueueName}
 }
 
-func handleImageUpdateMessages(delivery <-chan amqp.Delivery) {
-	for msg := range delivery {
+func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound chan<- ImageUpdate) {
+	for msg := range inBound {
 
 		var imageUpdate ImageUpdate
 		jsonErr := json.Unmarshal(msg.Body, &imageUpdate)
@@ -47,8 +47,15 @@ func handleImageUpdateMessages(delivery <-chan amqp.Delivery) {
 			msg.Nack(false, false)
 		} else {
 			log.Println("successfully consumed image update message")
+			outBound <- imageUpdate
 			msg.Ack(false)
 		}
+	}
+}
+
+func handleOutgoingImageUpdateMessages(inBound <-chan ImageUpdate) {
+	for imageUpdate := range inBound {
+		log.Printf("implement me. would send imageupdates to rabbitmq %v\n", imageUpdate)
 	}
 }
 
