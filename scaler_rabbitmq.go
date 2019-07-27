@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/streadway/amqp"
 )
@@ -31,4 +34,32 @@ func setupRabbitMqTopicsAndQueues(channel *amqp.Channel, userEventExchangeName s
 	log.Printf("created topics and queues %s, %s", userImageEventQueueName, userEventExchangeName)
 
 	return rabbitArtifacts{userEventExchangeName: userEventExchangeName, userImageUpdateQueueName: userImageEventQueueName}
+}
+
+func handleImageUpdateMessages(delivery <-chan amqp.Delivery) {
+	for msg := range delivery {
+
+		var imageUpdate ImageUpdate
+		jsonErr := json.Unmarshal(msg.Body, &imageUpdate)
+
+		if jsonErr != nil {
+			log.Println("failed to consume image update message")
+			msg.Nack(false, false)
+		} else {
+			log.Println("successfully consumed image update message")
+			msg.Ack(false)
+		}
+	}
+}
+
+func connectRabbit(conf rabbitConf) *amqp.Connection {
+	for {
+		conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d/", conf.username, conf.password, conf.hostname, conf.port))
+		if err == nil && conn != nil {
+			log.Println("connected to rabbitmq")
+			return conn
+		}
+		log.Println(fmt.Sprintf("failed to connect to rabbitmq will retry in %d. current cause: %s", conf.timeout, err))
+		time.Sleep(conf.timeout)
+	}
 }
