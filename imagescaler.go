@@ -103,9 +103,6 @@ func scaleImageToTarget(sourceImageBytes []byte, scale Scale) (io.Reader, error)
 
 }
 
-func writeImageToObjectStorage(scaledReader io.Reader, scale Scale, imageUpdate *ImageUpdate) error {
-	return nil
-}
 
 func loadImageFromObjectStorage(url string) ([]byte, error) {
 	response, err := http.Get(url)
