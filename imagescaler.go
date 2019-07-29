@@ -50,8 +50,19 @@ func main() {
 func handleImageUpdates(incomingImageUpdates <-chan ImageUpdate, outgoingImageUpdates chan<- ImageUpdate) {
 	for imageUpdate := range incomingImageUpdates {
 
-		outgoingImageUpdates <- loadScaleAndWriteImage(imageUpdate, WEB)
-		outgoingImageUpdates <- loadScaleAndWriteImage(imageUpdate, THUMBNAIL)
+		outGoingImageUpdateForWeb, webErr := loadScaleAndWriteImage(imageUpdate, WEB)
+		if webErr != nil {
+			log.Printf("failed to handle image update %v for WEB scale: %v\n", imageUpdate, webErr)
+		} else {
+			outgoingImageUpdates <- outGoingImageUpdateForWeb
+		}
+
+		outGoingImageUpdateForThumbnail, thumbnailErr := loadScaleAndWriteImage(imageUpdate, THUMBNAIL)
+		if thumbnailErr != nil {
+			log.Printf("failed to handle image update %v for WEB scale: %v\n", imageUpdate, thumbnailErr)
+		} else {
+			outgoingImageUpdates <- outGoingImageUpdateForThumbnail
+		}
 
 		log.Printf("got image update %s", imageUpdate.UserUUID)
 	}
