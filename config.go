@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type rabbitConf struct {
+type imageScalerConfig struct {
 	hostname              string
 	port                  int
 	username              string
@@ -22,7 +22,7 @@ type rabbitConf struct {
 	minioBucketName       string
 }
 
-func readConfig() rabbitConf {
+func readConfig() imageScalerConfig {
 	viper.SetConfigFile("config.properties")
 	viper.SetConfigType("properties")
 
@@ -44,7 +44,7 @@ func readConfig() rabbitConf {
 	confErr := viper.ReadInConfig()
 	logOnError(confErr, "No configuration file loaded - using defaults")
 
-	return rabbitConf{
+	return imageScalerConfig{
 		hostname:              viper.GetString("rabbitmq.hostname"),
 		port:                  viper.GetInt("rabbitmq.port"),
 		username:              viper.GetString("rabbitmq.username"),

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -24,8 +25,8 @@ const (
 )
 
 // ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
-func ScaleImage(in io.Reader, scale Scale) (io.Reader, error) {
-	src, imageType, err := image.Decode(in)
+func ScaleImage(in io.Reader, scale Scale) (io.Reader, int, string, error) {
+	src, contentType, err := image.Decode(in)
 
 	if err != nil {
 		log.Fatal(err)
@@ -44,20 +45,22 @@ func ScaleImage(in io.Reader, scale Scale) (io.Reader, error) {
 	var encodeErr error
 
 	//TODO: need to know the actual type name (debug it)
-	if imageType == "jpeg" {
+	if contentType == "jpeg" {
 		encodeErr = jpeg.Encode(buff, dst, nil)
-	} else if imageType == "png" {
+	} else if contentType == "png" {
 		encodeErr = png.Encode(buff, dst)
-	} else if imageType == "bmp" {
+	} else if contentType == "bmp" {
 		encodeErr = bmp.Encode(buff, dst)
+	} else if contentType == "gif" {
+		encodeErr = gif.Encode(buff, dst, nil)
 	} else {
-		log.Printf("unknown image format %s", imageType)
+		log.Printf("unknown image format %s", contentType)
 	}
 	if encodeErr != nil {
-		return nil, err
+		return nil, -1, "nope", err
 	}
 
-	return bytes.NewReader(buff.Bytes()), nil
+	return bytes.NewReader(buff.Bytes()), len(buff.Bytes()), contentType, nil
 }
 
 //computeDstBounds returns

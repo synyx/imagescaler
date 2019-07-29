@@ -61,7 +61,7 @@ func handleOutgoingImageUpdateMessages(inBound <-chan ImageUpdate) {
 	}
 }
 
-func connectRabbit(conf rabbitConf) *amqp.Connection {
+func connectRabbit(conf imageScalerConfig) *amqp.Connection {
 	for {
 		conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d/", conf.username, conf.password, conf.hostname, conf.port))
 		if err == nil && conn != nil {
