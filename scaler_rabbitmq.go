@@ -47,7 +47,9 @@ func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound ch
 			msg.Nack(false, false)
 		} else {
 			log.Println("successfully consumed image update message")
-			outBound <- imageUpdate
+			if imageUpdate.ImageScale == "ORIGINAL" {
+				outBound <- imageUpdate
+			}
 			msg.Ack(false)
 		}
 	}

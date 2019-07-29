@@ -24,7 +24,7 @@ const (
 )
 
 // ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
-func ScaleImage(in io.Reader, scale Scale) io.Reader {
+func ScaleImage(in io.Reader, scale Scale) (io.Reader, error) {
 	src, imageType, err := image.Decode(in)
 
 	if err != nil {
@@ -54,10 +54,10 @@ func ScaleImage(in io.Reader, scale Scale) io.Reader {
 		log.Printf("unknown image format %s", imageType)
 	}
 	if encodeErr != nil {
-		log.Fatal(encodeErr)
+		return nil, err
 	}
 
-	return bytes.NewReader(buff.Bytes())
+	return bytes.NewReader(buff.Bytes()), nil
 }
 
 //computeDstBounds returns
