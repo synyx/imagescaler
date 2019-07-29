@@ -4,3 +4,4 @@
 *.properties
 imagescaler
 vendor
+.sw[o|p]
