@@ -49,31 +49,37 @@ func main() {
 
 func handleImageUpdates(incomingImageUpdates <-chan ImageUpdate, outgoingImageUpdates chan<- ImageUpdate) {
 	for imageUpdate := range incomingImageUpdates {
-		//ScaleImage(nil, THUMBNAIL)
+
+		outgoingImageUpdates <- loadScaleAndWriteImage(imageUpdate, WEB)
+		outgoingImageUpdates <- loadScaleAndWriteImage(imageUpdate, THUMBNAIL)
+
 		log.Printf("got image update %s", imageUpdate.UserUUID)
-
-		imageAsBytes, scaleErr := loadImageFromObjectStorage(imageUpdate.URL)
-		if scaleErr != nil {
-			log.Printf("failed to load image from image update %v: %v\n", imageUpdate, scaleErr)
-		}
-
-		//TODO: optimize me. look at the repeated code
-		webReader, scaleErr := scaleImageToTarget(imageAsBytes, WEB)
-		webImageUpdate, writeErr := writeImageToObjectStorage(webReader, WEB)
-		outgoingImageUpdates <- webImageUpdate
-
-		thumbnailReader, scaleErr := scaleImageToTarget(imageAsBytes, THUMBNAIL)
-		thumbnailImageUpdate, writeErr := writeImageToObjectStorage(thumbnailReader, THUMBNAIL)
-		outgoingImageUpdates <- thumbnailImageUpdate
-
-		if writeErr != nil {
-			log.Printf("failed to write scaled image to object storage: %v ", writeErr)
-		}
-		if scaleErr != nil {
-			log.Printf("failed to scale image to target scale: %v", scaleErr)
-		}
-
 	}
+}
+
+func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale) (ImageUpdate, error) {
+
+	var imageUpdate ImageUpdate
+
+	imageAsBytes, loadErr := loadImageFromObjectStorage(incomingImageUpdate.URL)
+	if loadErr != nil {
+		log.Printf("failed to load image from image update %v: %v\n", incomingImageUpdate, loadErr)
+		return imageUpdate, loadErr
+	}
+
+	thumbnailReader, scaleErr := scaleImageToTarget(imageAsBytes, THUMBNAIL)
+	if scaleErr != nil {
+		log.Printf("failed to scale image to target scale: %v", scaleErr)
+		return imageUpdate, scaleErr
+	}
+
+	writeErr := writeImageToObjectStorage(thumbnailReader, THUMBNAIL, &imageUpdate)
+	if writeErr != nil {
+		log.Printf("failed to write scaled image to object storage: %v ", writeErr)
+		return imageUpdate, writeErr
+	}
+
+	return imageUpdate, nil
 }
 
 func scaleImageToTarget(sourceImageBytes []byte, scale Scale) (io.Reader, error) {
@@ -86,9 +92,8 @@ func scaleImageToTarget(sourceImageBytes []byte, scale Scale) (io.Reader, error)
 
 }
 
-func writeImageToObjectStorage(scaledReader io.Reader, scale Scale) (ImageUpdate, error) {
-	var imageUpdate ImageUpdate
-	return imageUpdate, nil
+func writeImageToObjectStorage(scaledReader io.Reader, scale Scale, imageUpdate *ImageUpdate) error {
+	return nil
 }
 
 func loadImageFromObjectStorage(url string) ([]byte, error) {
