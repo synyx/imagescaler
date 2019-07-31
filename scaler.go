@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"image"
 	"image/gif"
@@ -17,11 +18,26 @@ import (
 // Scale defines a symbolic value for the target size of a scaling operation
 type Scale int
 
+func scaleToString(scale Scale) (string, error) {
+	switch scale {
+	case WEB:
+		return "WEB", nil
+	case THUMBNAIL:
+		return "THUMBNAIL", nil
+	case ORIGINAL:
+		return "ORIGINAL", nil
+	default:
+		return "", errors.New("unknown scale type")
+	}
+}
+
 const (
 	// THUMBNAIL is the size for thumbnails
 	THUMBNAIL Scale = iota
 	// WEB is the size for web usage
 	WEB
+	// ORIGINAL is the original upload size
+	ORIGINAL
 )
 
 // ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
@@ -44,7 +60,6 @@ func ScaleImage(in io.Reader, scale Scale) (io.Reader, int, string, error) {
 	buff := new(bytes.Buffer)
 	var encodeErr error
 
-	//TODO: need to know the actual type name (debug it)
 	if contentType == "jpeg" {
 		encodeErr = jpeg.Encode(buff, dst, nil)
 	} else if contentType == "png" {
