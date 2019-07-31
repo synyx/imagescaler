@@ -71,6 +71,7 @@ func handleImageUpdates(incomingImageUpdates <-chan ImageUpdate, outgoingImageUp
 func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, config imageScalerConfig) (ImageUpdate, error) {
 
 	var imageUpdate ImageUpdate
+	imageUpdate.UserUUID = incomingImageUpdate.UserUUID // userUUID is already known. let's write it here
 
 	imageAsBytes, loadErr := loadImageFromObjectStorage(incomingImageUpdate.URL)
 	if loadErr != nil {
