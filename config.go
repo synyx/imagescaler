@@ -20,6 +20,7 @@ type imageScalerConfig struct {
 	minioAccessKey        string
 	minioSecret           string
 	minioBucketName       string
+	minioSecure           bool
 }
 
 func readConfig() imageScalerConfig {
@@ -35,10 +36,11 @@ func readConfig() imageScalerConfig {
 	viper.SetDefault("rabbitmq.image.exchange", "image.event")
 
 	//default values suitable for min.io docker container
-	viper.SetDefault("minio.url", "http://localhost:9000")
+	viper.SetDefault("minio.url", "localhost:9000")
 	viper.SetDefault("minio.accesskey", "admin")
-	viper.SetDefault("minio.secret", "secret")
+	viper.SetDefault("minio.secret", "password")
 	viper.SetDefault("minio.bucketname", "testbucket")
+	viper.SetDefault("minio.secure", false)
 
 	//load config
 	confErr := viper.ReadInConfig()
@@ -58,5 +60,6 @@ func readConfig() imageScalerConfig {
 		minioAccessKey:        viper.GetString("minio.accesskey"),
 		minioSecret:           viper.GetString("minio.secret"),
 		minioBucketName:       viper.GetString("minio.bucketname"),
+		minioSecure:           viper.GetBool("minio.secure"),
 	}
 }

@@ -18,7 +18,7 @@ func writeImageToObjectStorage(scaledReader io.Reader, length int, imageType str
 		log.Printf("error while creating image UUID: %v", err)
 		return imageUpdate, err
 	}
-	minioClient, err := minio.New(config.minioURL, config.minioAccessKey, config.minioSecret, false)
+	minioClient, err := minio.New(config.minioURL, config.minioAccessKey, config.minioSecret, config.minioSecure)
 	if err != nil {
 		log.Printf("error while creating min.io client: %v", err)
 		return imageUpdate, err
