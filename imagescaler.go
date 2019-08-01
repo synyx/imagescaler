@@ -29,7 +29,7 @@ func main() {
 
 	channel, err := connection.Channel()
 	defer channel.Close()
-	failOnError(err, "failed to create channel from connectoin")
+	failOnError(err, "failed to create channel from connection")
 
 	rabbitArtifacts := setupRabbitMqTopicsAndQueues(channel, "user.event", "user.image.event.dev", "user.image.created.#")
 
@@ -41,8 +41,6 @@ func main() {
 	go handleIncomingImageUpdateMessages(msgs, incomingImageUpdates)
 	go handleOutgoingImageUpdateMessages(outgoingImageUpdates)
 	go handleImageUpdates(incomingImageUpdates, outgoingImageUpdates, config)
-
-	log.Print("hallo")
 
 	<-forever // hammer time!
 }
@@ -64,7 +62,7 @@ func handleImageUpdates(incomingImageUpdates <-chan ImageUpdate, outgoingImageUp
 			outgoingImageUpdates <- outGoingImageUpdateForThumbnail
 		}
 
-		log.Printf("got image update %s", imageUpdate.UserUUID)
+		log.Printf("handled image update image update %v", imageUpdate)
 	}
 }
 
@@ -91,6 +89,7 @@ func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, 
 	}
 	imageUpdate.UserUUID = incomingImageUpdate.UserUUID // don't forget the userUUID
 
+	log.Printf("wrote new image to min.io: %v", imageUpdate)
 	return imageUpdate, nil
 }
 
