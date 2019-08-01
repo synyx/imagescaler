@@ -78,13 +78,13 @@ func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, 
 		return imageUpdate, loadErr
 	}
 
-	thumbnailReader, scaledLength, contentType, scaleErr := scaleImageToTarget(imageAsBytes, THUMBNAIL)
+	thumbnailReader, scaledLength, contentType, scaleErr := scaleImageToTarget(imageAsBytes, targetScale)
 	if scaleErr != nil {
-		log.Printf("failed to scale image to target scale: %v", scaleErr)
+		log.Printf("failed to scale image to target scale %d: %v", targetScale, scaleErr)
 		return imageUpdate, scaleErr
 	}
 
-	imageUpdate, writeErr := writeImageToObjectStorage(thumbnailReader, scaledLength, contentType, THUMBNAIL, config)
+	imageUpdate, writeErr := writeImageToObjectStorage(thumbnailReader, scaledLength, contentType, targetScale, config)
 	if writeErr != nil {
 		log.Printf("failed to write scaled image to object storage: %v ", writeErr)
 		return imageUpdate, writeErr
