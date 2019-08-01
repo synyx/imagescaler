@@ -71,7 +71,6 @@ func handleImageUpdates(incomingImageUpdates <-chan ImageUpdate, outgoingImageUp
 func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, config imageScalerConfig) (ImageUpdate, error) {
 
 	var imageUpdate ImageUpdate
-	imageUpdate.UserUUID = incomingImageUpdate.UserUUID // userUUID is already known. let's write it here
 
 	imageAsBytes, loadErr := loadImageFromObjectStorage(incomingImageUpdate.URL)
 	if loadErr != nil {
@@ -85,11 +84,12 @@ func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, 
 		return imageUpdate, scaleErr
 	}
 
-	writeErr := writeImageToObjectStorage(thumbnailReader, scaledLength, contentType, THUMBNAIL, &imageUpdate, config)
+	imageUpdate, writeErr := writeImageToObjectStorage(thumbnailReader, scaledLength, contentType, THUMBNAIL, config)
 	if writeErr != nil {
 		log.Printf("failed to write scaled image to object storage: %v ", writeErr)
 		return imageUpdate, writeErr
 	}
+	imageUpdate.UserUUID = incomingImageUpdate.UserUUID // don't forget the userUUID
 
 	return imageUpdate, nil
 }
