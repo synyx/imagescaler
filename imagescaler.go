@@ -31,7 +31,7 @@ func main() {
 	defer channel.Close()
 	failOnError(err, "failed to create channel from connection")
 
-	rabbitArtifacts := setupRabbitMqTopicsAndQueues(channel, "user.event", "user.image.event.dev", "user.image.created.#")
+	rabbitArtifacts := setupRabbitMqTopicsAndQueues(channel, config.imageExchange, config.imageUpdateQueue, config.imageUpdateRoutingKey)
 
 	msgs, deliveryErr := channel.Consume(rabbitArtifacts.userImageUpdateQueueName, "what?", false, false, false, false, nil)
 	failOnError(deliveryErr, "failed to deliver messages")

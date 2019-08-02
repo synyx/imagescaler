@@ -33,7 +33,9 @@ func readConfig() imageScalerConfig {
 	viper.SetDefault("rabbitmq.username", "guest")
 	viper.SetDefault("rabbitmq.password", "guest")
 	viper.SetDefault("rabbitmq.timeout", "5s")
-	viper.SetDefault("rabbitmq.image.exchange", "image.event")
+	viper.SetDefault("rabbitmq.image.exchange", "user.event")
+	viper.SetDefault("rabbitmq.image.update.queue", "user.image.url.updated.dev")
+	viper.SetDefault("rabbitmq.image.update.routingkey", "user.image.url.updated.#")
 
 	//default values suitable for min.io docker container
 	viper.SetDefault("minio.url", "localhost:9000")
@@ -54,7 +56,7 @@ func readConfig() imageScalerConfig {
 		timeout:               viper.GetDuration("rabbitmq.timeout"),
 		filename:              viper.GetString("filename"),
 		imageExchange:         viper.GetString("rabbitmq.image.exchange"),
-		imageUpdateQueue:      viper.GetString("rabbitmq.image.udpate.queue"),
+		imageUpdateQueue:      viper.GetString("rabbitmq.image.update.queue"),
 		imageUpdateRoutingKey: viper.GetString("rabbitmq.image.update.routingkey"),
 		minioURL:              viper.GetString("minio.url"),
 		minioAccessKey:        viper.GetString("minio.accesskey"),

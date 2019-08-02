@@ -65,13 +65,17 @@ func handleOutgoingImageUpdateMessages(inBound <-chan ImageUpdate, channel *amqp
 			log.Printf("failed to marshal imageUpdate %v to JSON %v\n", imageUpdate, err)
 		}
 
-		sendErr := channel.Publish("user.event", fmt.Sprintf("user.image.updated.%s", imageUpdate.UserUUID), false, false,
+		sendErr := channel.Publish("user.event", fmt.Sprintf(config.imageUpdateRoutingKey, imageUpdate.UserUUID), false, false,
 			amqp.Publishing{
 				ContentType: "application/json",
 				Body:        messageBody,
 			})
 
-		logOnError(sendErr, "failed to send reply message:")
+		if sendErr != nil {
+			log.Printf("failed to send reply message: %v", sendErr)
+			continue
+		}
+		log.Printf("published image update event for %v", imageUpdate)
 	}
 }
 
