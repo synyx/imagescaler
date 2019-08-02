@@ -1,9 +1,10 @@
 FROM golang:1.11 AS builder
 
-RUN go get github.com/rjayasinghe/imagescaler
+WORKDIR /src
 
-WORKDIR $GOPATH/src/github.com/rjayasinghe/imagescaler
-COPY . ./
+RUN git clone  https://github.com/rjayasinghe/imagescaler
+
+WORKDIR /src/imagescaler
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o /imagescaler .
 
 FROM scratch
