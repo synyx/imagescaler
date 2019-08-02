@@ -39,7 +39,7 @@ func main() {
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 
 	go handleIncomingImageUpdateMessages(msgs, incomingImageUpdates)
-	go handleOutgoingImageUpdateMessages(outgoingImageUpdates)
+	go handleOutgoingImageUpdateMessages(outgoingImageUpdates, channel, config)
 	go handleImageUpdates(incomingImageUpdates, outgoingImageUpdates, config)
 
 	<-forever // hammer time!

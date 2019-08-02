@@ -57,9 +57,21 @@ func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound ch
 	}
 }
 
-func handleOutgoingImageUpdateMessages(inBound <-chan ImageUpdate) {
+func handleOutgoingImageUpdateMessages(inBound <-chan ImageUpdate, channel *amqp.Channel, config imageScalerConfig) {
 	for imageUpdate := range inBound {
-		log.Printf("implement me. would send imageupdates to rabbitmq %v\n", imageUpdate)
+
+		messageBody, err := json.Marshal(imageUpdate)
+		if err != nil {
+			log.Printf("failed to marshal imageUpdate %v to JSON %v\n", imageUpdate, err)
+		}
+
+		sendErr := channel.Publish("user.event", fmt.Sprintf("user.image.updated.%s", imageUpdate.UserUUID), false, false,
+			amqp.Publishing{
+				ContentType: "application/json",
+				Body:        messageBody,
+			})
+
+		logOnError(sendErr, "failed to send reply message:")
 	}
 }
 
