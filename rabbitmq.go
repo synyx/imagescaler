@@ -44,13 +44,15 @@ func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound ch
 
 		if jsonErr != nil {
 			log.Printf("failed to consume image update message %v\n", jsonErr)
-			msg.Nack(false, false)
+			msg.Nack(false, false) // nack and don't requeue -> good bye!
 		} else {
-			log.Println("successfully consumed image update message")
 			if imageUpdate.ImageScale == "ORIGINAL" {
 				outBound <- imageUpdate
+				log.Println("successfully consumed image update message")
+				msg.Ack(false)
+			} else {
+				log.Println("won't consume image update messages with scale other than ORIGINAL")
 			}
-			msg.Ack(false)
 		}
 	}
 }

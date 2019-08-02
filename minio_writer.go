@@ -9,6 +9,8 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 )
 
+//TODO: create an interface and have several implementations e.g. test mocks
+
 func writeImageToObjectStorage(scaledReader io.Reader, length int, imageType string, scale Scale, config imageScalerConfig) (ImageUpdate, error) {
 	var imageUpdate ImageUpdate
 	var minioOpts minio.PutObjectOptions
