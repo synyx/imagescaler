@@ -10,10 +10,10 @@ import (
 
 //ImageUpdate holds the information encoded by a received image update message
 type ImageUpdate struct {
-	ImageUUID  string
-	UserUUID   string
-	URL        string
-	ImageScale string
+	ImageUUID  string `json:"imageUUID"`
+	UserUUID   string `json:"userUUID"`
+	URL        string `json:"url"`
+	ImageScale string `json:"imageScale"`
 }
 
 func main() {
