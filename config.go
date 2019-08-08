@@ -17,6 +17,7 @@ type imageScalerConfig struct {
 	imageUpdateRoutingKey string
 	timeout               time.Duration
 	minioURL              string
+	minioExternalURL      string
 	minioAccessKey        string
 	minioSecret           string
 	minioBucketName       string
@@ -39,6 +40,7 @@ func readConfig() imageScalerConfig {
 
 	//default values suitable for min.io docker container
 	viper.SetDefault("minio.url", "localhost:9000")
+	viper.SetDefault("minio.external-url", "https://localhost:9000")
 	viper.SetDefault("minio.accesskey", "admin")
 	viper.SetDefault("minio.secret", "password")
 	viper.SetDefault("minio.bucketname", "testbucket")
@@ -59,6 +61,7 @@ func readConfig() imageScalerConfig {
 		imageUpdateQueue:      viper.GetString("rabbitmq.image.update.queue"),
 		imageUpdateRoutingKey: viper.GetString("rabbitmq.image.update.routingkey"),
 		minioURL:              viper.GetString("minio.url"),
+		minioExternalURL:      viper.GetString("minio.external-url"),
 		minioAccessKey:        viper.GetString("minio.accesskey"),
 		minioSecret:           viper.GetString("minio.secret"),
 		minioBucketName:       viper.GetString("minio.bucketname"),

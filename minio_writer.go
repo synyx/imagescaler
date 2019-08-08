@@ -32,7 +32,7 @@ func writeImageToObjectStorage(scaledReader io.Reader, length int, imageType str
 	}
 
 	imageUpdate.ImageUUID = imageUUID.String()
-	imageUpdate.URL = fmt.Sprintf("%s/%s/%s", config.minioURL, config.minioBucketName, imageUUID)
+	imageUpdate.URL = fmt.Sprintf("%s/%s/%s", config.minioExternalURL, config.minioBucketName, imageUUID)
 	scaleString, err := scaleToString(scale) // things can go wrong here
 	if err != nil {
 		return imageUpdate, err
