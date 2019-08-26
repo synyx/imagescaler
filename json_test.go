@@ -7,7 +7,7 @@ import (
 )
 
 func TestCorrectMarshaling(t *testing.T) {
-	testJsonString := `
+	testJSONString := `
 		{
 			"ImageUUID": "yolo",
 			"userUUID": "user",
@@ -17,7 +17,7 @@ func TestCorrectMarshaling(t *testing.T) {
 	`
 
 	var imageUpdate ImageUpdate
-	err := json.Unmarshal([]byte(testJsonString), &imageUpdate)
+	err := json.Unmarshal([]byte(testJSONString), &imageUpdate)
 	if err != nil {
 		t.Errorf("failed to unmarshal json string: %v", err)
 	}
