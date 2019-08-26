@@ -77,6 +77,7 @@ func readConfig() imageScalerConfig {
 		minioSecret:           viper.GetString("minio.secret"),
 		minioBucketName:       viper.GetString("minio.bucketname"),
 		minioSecure:           viper.GetBool("minio.secure"),
+		originalScalingFactor: viper.GetString("scaling.original.factor"),
 		scalingTarget:         scalingTargets,
 	}
 }
