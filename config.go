@@ -32,6 +32,7 @@ type scalingTargetConf struct {
 func readConfig() imageScalerConfig {
 	viper.SetConfigFile("config.toml")
 	viper.SetConfigType("toml")
+	viper.AddConfigPath(".")
 
 	//default values suitable for vanilla rabbitmq docker container
 	viper.SetDefault("rabbitmq.hostname", "localhost")
@@ -59,7 +60,7 @@ func readConfig() imageScalerConfig {
 
 	var scalingTargets map[string]scalingTargetConf
 
-	sub := viper.Sub("target")
+	sub := viper.Sub("scaling.target")
 	sub.Unmarshal(&scalingTargets)
 
 	return imageScalerConfig{
