@@ -21,6 +21,7 @@ type imageScalerConfig struct {
 	minioSecret           string
 	minioBucketName       string
 	minioSecure           bool
+	originalScalingFactor string
 	scalingTarget         map[string]scalingTargetConf
 }
 type scalingTargetConf struct {
@@ -49,6 +50,8 @@ func readConfig() imageScalerConfig {
 	viper.SetDefault("minio.secret", "password")
 	viper.SetDefault("minio.bucketname", "testbucket")
 	viper.SetDefault("minio.secure", false)
+
+	viper.SetDefault("scaling.original.factor", "ORIGINAL")
 
 	//load config
 	confErr := viper.ReadInConfig()
