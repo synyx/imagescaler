@@ -1,0 +1,25 @@
+[rabbitmq]
+  hostname="localhost"
+  port=5672
+  username="guest"
+  password="guest"
+  image-exchange="image.event"
+  image-update-queue="image.updated"
+  image-update-routingkey="imgage.updated"
+[minio]
+  url="localhost:9000"
+  external-url="http://localhost:9000"
+  accesskey="admin"
+  secret="password"
+  bucketname="testbucket"
+  secure=false
+
+[scaling.original]
+factor = "ORIGINAL"
+[scaling.target.thumbnail]
+factor = "THUMBNAIL"
+width = 200
+
+[scaling.target.web]
+factor = "WEB"
+width = 800
