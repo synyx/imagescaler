@@ -18,6 +18,19 @@ import (
 // Scale defines a symbolic value for the target size of a scaling operation
 type Scale int
 
+func stringToScale(input string) (Scale, error) {
+	switch input {
+	case "WEB":
+		return WEB, nil
+	case "THUMBNAIL":
+		return THUMBNAIL, nil
+	case "ORIGINAL":
+		return ORIGINAL, nil
+	default:
+		return ORIGINAL, errors.New("unknown scale type")
+	}
+}
+
 func scaleToString(scale Scale) (string, error) {
 	switch scale {
 	case WEB:
