@@ -2,8 +2,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
-	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -15,53 +13,15 @@ import (
 	"golang.org/x/image/draw"
 )
 
-// Scale defines a symbolic value for the target size of a scaling operation
-type Scale int
-
-func stringToScale(input string) (Scale, error) {
-	switch input {
-	case "WEB":
-		return WEB, nil
-	case "THUMBNAIL":
-		return THUMBNAIL, nil
-	case "ORIGINAL":
-		return ORIGINAL, nil
-	default:
-		return ORIGINAL, errors.New("unknown scale type")
-	}
-}
-
-func scaleToString(scale Scale) (string, error) {
-	switch scale {
-	case WEB:
-		return "WEB", nil
-	case THUMBNAIL:
-		return "THUMBNAIL", nil
-	case ORIGINAL:
-		return "ORIGINAL", nil
-	default:
-		return "", errors.New("unknown scale type")
-	}
-}
-
-const (
-	// THUMBNAIL is the size for thumbnails
-	THUMBNAIL Scale = iota
-	// WEB is the size for web usage
-	WEB
-	// ORIGINAL is the original upload size
-	ORIGINAL
-)
-
 // ScaleImage converts an incoming image provided by Reader to a scaled version provided by the returned reader
-func ScaleImage(in io.Reader, scale Scale) (io.Reader, int, string, error) {
+func ScaleImage(in io.Reader, targetScale scalingTargetConf) (io.Reader, int, string, error) {
 	src, contentType, err := image.Decode(in)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dstBounds, err := computeDstBounds(src.Bounds(), scale)
+	dstBounds, err := computeDstBounds(src.Bounds(), targetScale.Width)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -92,21 +52,9 @@ func ScaleImage(in io.Reader, scale Scale) (io.Reader, int, string, error) {
 }
 
 //computeDstBounds returns
-func computeDstBounds(srcBounds image.Rectangle, scale Scale) (image.Rectangle, error) {
+func computeDstBounds(srcBounds image.Rectangle, width int) (image.Rectangle, error) {
 
-	var dstBounds image.Rectangle
-
-	var dstX int
-	switch scale {
-	case THUMBNAIL:
-		dstX = 100
-		break
-	case WEB:
-		dstX = 1000
-		break
-	default:
-		return dstBounds, fmt.Errorf("unknown scale: %d", scale)
-	}
+	dstX := width
 
 	if dstX >= srcBounds.Dx() {
 		return srcBounds, nil //nothing to do. we do not up-scale atm

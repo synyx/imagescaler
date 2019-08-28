@@ -36,7 +36,7 @@ func setupRabbitMqTopicsAndQueues(channel *amqp.Channel, userEventExchangeName s
 	return rabbitArtifacts{userEventExchangeName: userEventExchangeName, userImageUpdateQueueName: userImageEventQueueName}
 }
 
-func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound chan<- ImageUpdate) {
+func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound chan<- ImageUpdate, config imageScalerConfig) {
 	for msg := range inBound {
 
 		var imageUpdate ImageUpdate
@@ -46,12 +46,13 @@ func handleIncomingImageUpdateMessages(inBound <-chan amqp.Delivery, outBound ch
 			log.Printf("failed to consume image update message %v\n", jsonErr)
 			msg.Nack(false, false) // nack and don't requeue -> good bye!
 		} else {
-			if imageUpdate.ImageScale == "ORIGINAL" {
+			if imageUpdate.ImageScale == config.originalScalingFactor {
 				outBound <- imageUpdate
 				log.Println("successfully consumed image update message")
-				msg.Ack(false)
+				msg.Ack(true)
 			} else {
 				log.Println("won't consume image update messages with scale other than ORIGINAL")
+				msg.Ack(true)
 			}
 		}
 	}

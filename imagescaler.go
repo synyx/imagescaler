@@ -38,7 +38,7 @@ func main() {
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 
-	go handleIncomingImageUpdateMessages(msgs, incomingImageUpdates)
+	go handleIncomingImageUpdateMessages(msgs, incomingImageUpdates, config)
 	go handleOutgoingImageUpdateMessages(outgoingImageUpdates, channel, config)
 	go handleImageUpdates(incomingImageUpdates, outgoingImageUpdates, config)
 
@@ -48,25 +48,20 @@ func main() {
 func handleImageUpdates(incomingImageUpdates <-chan ImageUpdate, outgoingImageUpdates chan<- ImageUpdate, config imageScalerConfig) {
 	for imageUpdate := range incomingImageUpdates {
 
-		outGoingImageUpdateForWeb, webErr := loadScaleAndWriteImage(imageUpdate, WEB, config)
-		if webErr != nil {
-			log.Printf("failed to handle image update %v for WEB scale: %v\n", imageUpdate, webErr)
-		} else {
-			outgoingImageUpdates <- outGoingImageUpdateForWeb
+		for _, targetScale := range config.scalingTarget {
+			outGoingImageUpdate, scaleErr := loadScaleAndWriteImage(imageUpdate, targetScale, config)
+			if scaleErr != nil {
+				log.Printf("failed to handle image update %v for %s scale: %v\n", imageUpdate, targetScale.Factor, scaleErr)
+			} else {
+				outgoingImageUpdates <- outGoingImageUpdate
+			}
+			log.Printf("handled image update image update %v", imageUpdate)
 		}
 
-		outGoingImageUpdateForThumbnail, thumbnailErr := loadScaleAndWriteImage(imageUpdate, THUMBNAIL, config)
-		if thumbnailErr != nil {
-			log.Printf("failed to handle image update %v for WEB scale: %v\n", imageUpdate, thumbnailErr)
-		} else {
-			outgoingImageUpdates <- outGoingImageUpdateForThumbnail
-		}
-
-		log.Printf("handled image update image update %v", imageUpdate)
 	}
 }
 
-func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, config imageScalerConfig) (ImageUpdate, error) {
+func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale scalingTargetConf, config imageScalerConfig) (ImageUpdate, error) {
 
 	var imageUpdate ImageUpdate
 
@@ -78,11 +73,11 @@ func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, 
 
 	thumbnailReader, scaledLength, contentType, scaleErr := scaleImageToTarget(imageAsBytes, targetScale)
 	if scaleErr != nil {
-		log.Printf("failed to scale image to target scale %d: %v", targetScale, scaleErr)
+		log.Printf("failed to scale image to target scale %v: %v", targetScale, scaleErr)
 		return imageUpdate, scaleErr
 	}
 
-	imageUpdate, writeErr := writeImageToObjectStorage(thumbnailReader, scaledLength, contentType, targetScale, config)
+	imageUpdate, writeErr := writeImageToObjectStorage(thumbnailReader, scaledLength, contentType, targetScale.Factor, config)
 	if writeErr != nil {
 		log.Printf("failed to write scaled image to object storage: %v ", writeErr)
 		return imageUpdate, writeErr
@@ -93,9 +88,9 @@ func loadScaleAndWriteImage(incomingImageUpdate ImageUpdate, targetScale Scale, 
 	return imageUpdate, nil
 }
 
-func scaleImageToTarget(sourceImageBytes []byte, scale Scale) (io.Reader, int, string, error) {
+func scaleImageToTarget(sourceImageBytes []byte, targetScale scalingTargetConf) (io.Reader, int, string, error) {
 
-	scaledReader, scaledLength, contentType, scaleErr := ScaleImage(bytes.NewReader(sourceImageBytes), scale)
+	scaledReader, scaledLength, contentType, scaleErr := ScaleImage(bytes.NewReader(sourceImageBytes), targetScale)
 	if scaleErr != nil {
 		return nil, -1, "nope", scaleErr
 	}

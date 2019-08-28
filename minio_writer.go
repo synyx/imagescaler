@@ -11,7 +11,7 @@ import (
 
 //TODO: create an interface and have several implementations e.g. test mocks
 
-func writeImageToObjectStorage(scaledReader io.Reader, length int, imageType string, scale Scale, config imageScalerConfig) (ImageUpdate, error) {
+func writeImageToObjectStorage(scaledReader io.Reader, length int, imageType string, targetScale string, config imageScalerConfig) (ImageUpdate, error) {
 	var imageUpdate ImageUpdate
 	var minioOpts minio.PutObjectOptions
 	minioOpts.ContentType = fmt.Sprintf("image/%s", imageType)
@@ -33,11 +33,10 @@ func writeImageToObjectStorage(scaledReader io.Reader, length int, imageType str
 
 	imageUpdate.ImageUUID = imageUUID.String()
 	imageUpdate.URL = fmt.Sprintf("%s/%s/%s", config.minioExternalURL, config.minioBucketName, imageUUID)
-	scaleString, err := scaleToString(scale) // things can go wrong here
 	if err != nil {
 		return imageUpdate, err
 	}
-	imageUpdate.ImageScale = scaleString
+	imageUpdate.ImageScale = targetScale
 
 	return imageUpdate, nil
 }
