@@ -19,8 +19,6 @@ require (
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/minio/cli v1.21.0 // indirect
 	github.com/minio/minio-go/v6 v6.0.33
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/pelletier/go-toml v1.4.0 // indirect
@@ -49,3 +47,5 @@ require (
 )
 
 replace github.com/golang/lint => golang.org/x/lint v0.0.0-20190409202823-959b441ac422
+
+go 1.13
