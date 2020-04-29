@@ -1,5 +1,5 @@
 # Message Driven Image Scaler
-The imagescaler is a program that uses Go's native image processing capabilities to scale down images in an object storage (currently min.io) system.
+The imagescaler is a program that uses Go's builtin image processing capabilities to scale down images stored in an object storage (currently min.io) system.
 
 ## Motivation
 Traditionally image processing is done from within a given program using native bindings to the overly popular ImageMagick (or similar programs). This has drawbacks:
